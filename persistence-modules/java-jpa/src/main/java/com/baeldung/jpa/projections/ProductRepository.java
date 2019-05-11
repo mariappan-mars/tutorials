@@ -26,6 +26,13 @@ public class ProductRepository {
         return resultList;
     }
     
+    @SuppressWarnings("unchecked")
+    public List<Object> findAllIdsUsingJPQL() {
+        Query query = entityManager.createQuery("select id from Product");
+        List<Object> resultList = query.getResultList();
+        return resultList;
+    }
+    
     public List<String> findAllNamesUsingCriteriaBuilderArray() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<String> query = builder.createQuery(String.class);
@@ -51,11 +58,11 @@ public class ProductRepository {
         return resultList;
     }
     
-    public List<Object[]> findAllIdAndNamesUsingCriteriaQueryMultiselect() {
+    public List<Object[]> findAllIdNameUnitPriceUsingCriteriaQueryMultiselect() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
         Root<Product> product = query.from(Product.class);
-        query.multiselect(product.get("id"), product.get("name"));
+        query.multiselect(product.get("id"), product.get("name"), product.get("unitPrice"));
         List<Object[]> resultList = entityManager.createQuery(query).getResultList();
         return resultList;
     }
@@ -71,5 +78,26 @@ public class ProductRepository {
     
     public List<Object> findAllIdAndNamesUsingCriteriaBuilderConstruct() {
         return null;
+    }
+    
+    public List<Object[]> findCountByCategoryUsingJPQL() {
+        Query query = entityManager.createQuery("select p.category, count(p) from Product p group by p.category");
+        List<Object[]> resultList = query.getResultList();
+        return resultList;
+    }
+    
+    public List<Object[]> findCountByCategoryUsingCriteriaBuilder() {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
+        Root<Product> product = query.from(Product.class);
+        query.multiselect(product.get("category"), builder.count(product));
+        query.groupBy(product.get("category"));
+        List<Object[]> resultList = entityManager.createQuery(query).getResultList();
+        return resultList;
+    }
+    
+    public List<Object[]> findCountByCategoryUsingProjections() {
+        List<Object[]> resultList = null;
+        return resultList;
     }
 }

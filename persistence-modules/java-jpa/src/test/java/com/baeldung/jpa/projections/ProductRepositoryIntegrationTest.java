@@ -28,15 +28,9 @@ public class ProductRepositoryIntegrationTest {
     private Transaction transaction;
     private ProductRepository productRepository;
 
-    @BeforeClass
+    @Before
     public void once() throws IOException {
         productRepository = new ProductRepository();
-    }
-
-    @After
-    public void tearDown() {
-        transaction.rollback();
-        session.close();
     }
     
     @Test
@@ -60,8 +54,7 @@ public class ProductRepositoryIntegrationTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void givenProductData_whenNameProjectionUsingJPQL_thenListOfStringReturned() {
-        Query query = session.createQuery("select id from Product");
-        List resultList = query.getResultList();
+        List resultList = productRepository.findAllNamesUsingJPQL();
         
         for(Object result: resultList) {
             logger.info("{}", result);
@@ -90,6 +83,22 @@ public class ProductRepositoryIntegrationTest {
         List<Tuple> resultList = session.createQuery(query).getResultList();
         
         for(Object result: resultList) {
+            logger.info("{}", result);
+        }
+    }
+    
+    @Test
+    public void givenProductData_whenCountByCategoryUsingJPQL_thenOK() {
+        List<Object[]> countByCategory = productRepository.findCountByCategoryUsingJPQL();
+        for(Object result: countByCategory) {
+            logger.info("{}", result);
+        }
+    }
+    
+    @Test
+    public void givenProductData_whenCountByCategoryUsingCriteriaBuider_thenOK() {
+        List<Object[]> countByCategory = productRepository.findCountByCategoryUsingCriteriaBuilder();
+        for(Object result: countByCategory) {
             logger.info("{}", result);
         }
     }
