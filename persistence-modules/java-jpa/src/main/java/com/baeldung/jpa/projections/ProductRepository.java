@@ -96,6 +96,17 @@ public class ProductRepository {
         return resultList;
     }
     
+    public List<Object[]> findCountByCategoryWithAliasUsingCriteriaBuilder() {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
+        Root<Product> product = query.from(Product.class);
+        query.multiselect(product.get("category"), builder.count(product).alias("count"));
+        query.groupBy(product.get("category"));
+        query.orderBy(builder.asc(builder.count(product)));
+        List<Object[]> resultList = entityManager.createQuery(query).getResultList();
+        return resultList;
+    }
+    
     public List<Object[]> findCountByCategoryUsingProjections() {
         List<Object[]> resultList = null;
         return resultList;

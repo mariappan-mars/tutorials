@@ -75,21 +75,16 @@ public class ProductRepositoryIntegrationTest {
     }
     
     @Test
-    public void givenProductData_whenNameProjectionUsingCriteriaBuilderAndTuple_thenListOfStringReturned() {
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<Tuple> query = builder.createQuery(Tuple.class);
-        Root<Product> product = query.from(Product.class);
-        query.select(builder.tuple(product.get("id")));
-        List<Tuple> resultList = session.createQuery(query).getResultList();
-        
-        for(Object result: resultList) {
+    public void givenProductData_whenCountByCategoryUsingJPQL_thenOK() {
+        List<Object[]> countByCategory = productRepository.findCountByCategoryUsingJPQL();
+        for(Object result: countByCategory) {
             logger.info("{}", result);
         }
     }
     
     @Test
-    public void givenProductData_whenCountByCategoryUsingJPQL_thenOK() {
-        List<Object[]> countByCategory = productRepository.findCountByCategoryUsingJPQL();
+    public void givenProductData_whenCountByCategoryWithAliasAndOrder_thenOK() {
+        List<Object[]> countByCategory = productRepository.findCountByCategoryWithAliasUsingCriteriaBuilder();
         for(Object result: countByCategory) {
             logger.info("{}", result);
         }

@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +71,7 @@ public class HibernateProjectionsIntegrationTest {
     
     
     @Test
-    public void givenProductData_whenNameProjectionUsingCriteriaBuilder_thenListOfStringReturned() {
+    public void givenProductData_whenNameProjectionUsingCriteria_thenListOfStringReturned() {
         Criteria criteria = session.createCriteria(Product.class);
         criteria = criteria.setProjection(Projections.property("name"));
         List resultList = criteria.list();
@@ -80,11 +81,24 @@ public class HibernateProjectionsIntegrationTest {
     }
     
     @Test
-    public void givenProductData_whenCountByCategoryUsingCriteriaBuider_thenOK() {
+    public void givenProductData_whenCountByCategoryUsingCriteria_thenOK() {
         Criteria criteria = session.createCriteria(Product.class);
         criteria = criteria.setProjection(Projections.projectionList()
             .add(Projections.groupProperty("category"))
             .add(Projections.rowCount()));
+        List countByCategory = criteria.list();
+        for (Object result : countByCategory) {
+            logger.info("{}", result);
+        }
+    }
+    
+    @Test
+    public void givenProductData_whenCountByCategoryWithAliasUsingCriteria_thenOK() {
+        Criteria criteria = session.createCriteria(Product.class);
+        criteria = criteria.setProjection(Projections.projectionList()
+            .add(Projections.groupProperty("category"))
+            .add(Projections.alias(Projections.rowCount(), "count")));
+        criteria.addOrder(Order.asc("count"));
         List countByCategory = criteria.list();
         for (Object result : countByCategory) {
             logger.info("{}", result);
