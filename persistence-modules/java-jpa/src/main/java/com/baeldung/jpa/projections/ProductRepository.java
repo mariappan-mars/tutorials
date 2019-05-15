@@ -33,7 +33,7 @@ public class ProductRepository {
         return resultList;
     }
     
-    public List<String> findAllNamesUsingCriteriaBuilderArray() {
+    public List<String> findAllNamesUsingCriteriaBuilder() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<String> query = builder.createQuery(String.class);
         Root<Product> product = query.from(Product.class);
@@ -76,14 +76,9 @@ public class ProductRepository {
         return resultList;
     }
     
-    public List<Object> findAllIdAndNamesUsingCriteriaBuilderConstruct() {
-        return null;
-    }
-    
     public List<Object[]> findCountByCategoryUsingJPQL() {
         Query query = entityManager.createQuery("select p.category, count(p) from Product p group by p.category");
-        List<Object[]> resultList = query.getResultList();
-        return resultList;
+        return query.getResultList();
     }
     
     public List<Object[]> findCountByCategoryUsingCriteriaBuilder() {
@@ -93,22 +88,6 @@ public class ProductRepository {
         query.multiselect(product.get("category"), builder.count(product));
         query.groupBy(product.get("category"));
         List<Object[]> resultList = entityManager.createQuery(query).getResultList();
-        return resultList;
-    }
-    
-    public List<Object[]> findCountByCategoryWithAliasUsingCriteriaBuilder() {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
-        Root<Product> product = query.from(Product.class);
-        query.multiselect(product.get("category"), builder.count(product).alias("count"));
-        query.groupBy(product.get("category"));
-        query.orderBy(builder.asc(builder.count(product)));
-        List<Object[]> resultList = entityManager.createQuery(query).getResultList();
-        return resultList;
-    }
-    
-    public List<Object[]> findCountByCategoryUsingProjections() {
-        List<Object[]> resultList = null;
         return resultList;
     }
 }

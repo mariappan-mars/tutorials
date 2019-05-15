@@ -1,5 +1,8 @@
 package com.baeldung.jpa.projections;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -14,23 +17,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HibernateProjectionsIntegrationTest {
-    private static Logger logger = LoggerFactory.getLogger(HibernateProjectionsIntegrationTest.class);
     private static Session session;
+    private static SessionFactory sessionFactory;
     private Transaction transaction;
 
     @BeforeClass
     public static void init() {
         Configuration configuration = getConfiguration();
         configuration.addAnnotatedClass(Product.class);
-        session = configuration.buildSessionFactory().getCurrentSession();
+        sessionFactory = configuration.buildSessionFactory();
     }    
     
     @Before
     public void before() {
+        session = sessionFactory.getCurrentSession();
         transaction = session.beginTransaction();        
     }   
     
@@ -63,10 +65,18 @@ public class HibernateProjectionsIntegrationTest {
         criteria = criteria.setProjection(Projections.projectionList()
             .add(Projections.id())
             .add(Projections.property("name")));
-        List resultList = criteria.list();
-        for (Object result : resultList) {
-            logger.info("{}", result);
-        }
+        List<Object[]> resultList = criteria.list();
+
+        assertNotNull(resultList);
+        assertEquals(4, resultList.size());
+        assertEquals(1L, resultList.get(0)[0]);
+        assertEquals("Product Name 1", resultList.get(0)[1]);
+        assertEquals(2L, resultList.get(1)[0]);
+        assertEquals("Product Name 2", resultList.get(1)[1]);
+        assertEquals(3L, resultList.get(2)[0]);
+        assertEquals("Product Name 3", resultList.get(2)[1]);
+        assertEquals(4L, resultList.get(3)[0]);
+        assertEquals("Product Name 4", resultList.get(3)[1]);
     }
     
     
@@ -75,9 +85,13 @@ public class HibernateProjectionsIntegrationTest {
         Criteria criteria = session.createCriteria(Product.class);
         criteria = criteria.setProjection(Projections.property("name"));
         List resultList = criteria.list();
-        for(Object result: resultList) {
-            logger.info("{}", result);
-        }
+
+        assertNotNull(resultList);
+        assertEquals(4, resultList.size());
+        assertEquals("Product Name 1", resultList.get(0));
+        assertEquals("Product Name 2", resultList.get(1));
+        assertEquals("Product Name 3", resultList.get(2));
+        assertEquals("Product Name 4", resultList.get(3));
     }
     
     @Test
@@ -86,10 +100,16 @@ public class HibernateProjectionsIntegrationTest {
         criteria = criteria.setProjection(Projections.projectionList()
             .add(Projections.groupProperty("category"))
             .add(Projections.rowCount()));
-        List countByCategory = criteria.list();
-        for (Object result : countByCategory) {
-            logger.info("{}", result);
-        }
+        List<Object[]> resultList = criteria.list();
+
+        assertNotNull(resultList);
+        assertEquals(3, resultList.size());
+        assertEquals("category1", resultList.get(0)[0]);
+        assertEquals(2L, resultList.get(0)[1]);
+        assertEquals("category2", resultList.get(1)[0]);
+        assertEquals(1L, resultList.get(1)[1]);
+        assertEquals("category3", resultList.get(2)[0]);
+        assertEquals(1L, resultList.get(2)[1]);
     }
     
     @Test
@@ -99,9 +119,15 @@ public class HibernateProjectionsIntegrationTest {
             .add(Projections.groupProperty("category"))
             .add(Projections.alias(Projections.rowCount(), "count")));
         criteria.addOrder(Order.asc("count"));
-        List countByCategory = criteria.list();
-        for (Object result : countByCategory) {
-            logger.info("{}", result);
-        }
+        List<Object[]> resultList = criteria.list();
+
+        assertNotNull(resultList);
+        assertEquals(3, resultList.size());
+        assertEquals("category2", resultList.get(0)[0]);
+        assertEquals(1L, resultList.get(0)[1]);
+        assertEquals("category3", resultList.get(1)[0]);
+        assertEquals(1L, resultList.get(1)[1]);
+        assertEquals("category1", resultList.get(2)[0]);
+        assertEquals(2L, resultList.get(2)[1]);
     }
 }

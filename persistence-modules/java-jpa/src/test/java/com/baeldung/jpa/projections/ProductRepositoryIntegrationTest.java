@@ -1,35 +1,20 @@
 package com.baeldung.jpa.projections;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.AvailableSettings;
-import org.hibernate.cfg.Configuration;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class ProductRepositoryIntegrationTest {
-    private static Logger logger = LoggerFactory.getLogger(ProductRepositoryIntegrationTest.class);
-    private Session session;
-    private Transaction transaction;
-    private ProductRepository productRepository;
+    private static ProductRepository productRepository;
 
-    @Before
-    public void once() throws IOException {
+    @BeforeClass
+    public static void once() throws IOException {
         productRepository = new ProductRepository();
     }
     
@@ -37,18 +22,32 @@ public class ProductRepositoryIntegrationTest {
     public void givenProductData_whenIdAndNameProjectionUsingJPQL_thenListOfObjectArrayReturned() {
         List<Object[]> resultList = productRepository.findAllIdAndNamesUsingJPQL();
         
-        for(Object result: resultList) {
-            logger.info("{}", result);
-        }
+        assertNotNull(resultList);
+        assertEquals(4, resultList.size());
+        assertEquals(1L, resultList.get(0)[0]);
+        assertEquals("Product Name 1", resultList.get(0)[1]);
+        assertEquals(2L, resultList.get(1)[0]);
+        assertEquals("Product Name 2", resultList.get(1)[1]);
+        assertEquals(3L, resultList.get(2)[0]);
+        assertEquals("Product Name 3", resultList.get(2)[1]);
+        assertEquals(4L, resultList.get(3)[0]);
+        assertEquals("Product Name 4", resultList.get(3)[1]);
     }
     
     @Test
     public void givenProductData_whenIdAndNameProjectionUsingCriteriaBuilder_thenListOfObjectArrayReturned() {
         List<Object[]> resultList = productRepository.findAllIdAndNamesUsingCriteriaBuilderArray();
                 
-        for(Object result: resultList) {
-            logger.info("{}", result);
-        }
+        assertNotNull(resultList);
+        assertEquals(4, resultList.size());
+        assertEquals(1L, resultList.get(0)[0]);
+        assertEquals("Product Name 1", resultList.get(0)[1]);
+        assertEquals(2L, resultList.get(1)[0]);
+        assertEquals("Product Name 2", resultList.get(1)[1]);
+        assertEquals(3L, resultList.get(2)[0]);
+        assertEquals("Product Name 3", resultList.get(2)[1]);
+        assertEquals(4L, resultList.get(3)[0]);
+        assertEquals("Product Name 4", resultList.get(3)[1]);
     }
     
     @SuppressWarnings("rawtypes")
@@ -56,45 +55,51 @@ public class ProductRepositoryIntegrationTest {
     public void givenProductData_whenNameProjectionUsingJPQL_thenListOfStringReturned() {
         List resultList = productRepository.findAllNamesUsingJPQL();
         
-        for(Object result: resultList) {
-            logger.info("{}", result);
-        }
+        assertNotNull(resultList);
+        assertEquals(4, resultList.size());
+        assertEquals("Product Name 1", resultList.get(0));
+        assertEquals("Product Name 2", resultList.get(1));
+        assertEquals("Product Name 3", resultList.get(2));
+        assertEquals("Product Name 4", resultList.get(3));
     }
     
     @Test
     public void givenProductData_whenNameProjectionUsingCriteriaBuilder_thenListOfStringReturned() {
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
-        Root<Product> product = query.from(Product.class);
-        query.select(builder.array(product.get("name")));
-        List<Object[]> resultList = session.createQuery(query).getResultList();
+        List<String> resultList = productRepository.findAllNamesUsingCriteriaBuilder();
         
-        for(Object result: resultList) {
-            logger.info("{}", result);
-        }
+        assertNotNull(resultList);
+        assertEquals(4, resultList.size());
+        assertEquals("Product Name 1", resultList.get(0));
+        assertEquals("Product Name 2", resultList.get(1));
+        assertEquals("Product Name 3", resultList.get(2));
+        assertEquals("Product Name 4", resultList.get(3));
     }
     
     @Test
     public void givenProductData_whenCountByCategoryUsingJPQL_thenOK() {
-        List<Object[]> countByCategory = productRepository.findCountByCategoryUsingJPQL();
-        for(Object result: countByCategory) {
-            logger.info("{}", result);
-        }
+        List<Object[]> resultList = productRepository.findCountByCategoryUsingJPQL();
+
+        assertNotNull(resultList);
+        assertEquals(3, resultList.size());
+        assertEquals("category1", resultList.get(0)[0]);
+        assertEquals(2L, resultList.get(0)[1]);
+        assertEquals("category2", resultList.get(1)[0]);
+        assertEquals(1L, resultList.get(1)[1]);
+        assertEquals("category3", resultList.get(2)[0]);
+        assertEquals(1L, resultList.get(2)[1]);
     }
-    
-    @Test
-    public void givenProductData_whenCountByCategoryWithAliasAndOrder_thenOK() {
-        List<Object[]> countByCategory = productRepository.findCountByCategoryWithAliasUsingCriteriaBuilder();
-        for(Object result: countByCategory) {
-            logger.info("{}", result);
-        }
-    }
-    
+
     @Test
     public void givenProductData_whenCountByCategoryUsingCriteriaBuider_thenOK() {
-        List<Object[]> countByCategory = productRepository.findCountByCategoryUsingCriteriaBuilder();
-        for(Object result: countByCategory) {
-            logger.info("{}", result);
-        }
+        List<Object[]> resultList = productRepository.findCountByCategoryUsingCriteriaBuilder();
+
+        assertNotNull(resultList);
+        assertEquals(3, resultList.size());
+        assertEquals("category1", resultList.get(0)[0]);
+        assertEquals(2L, resultList.get(0)[1]);
+        assertEquals("category2", resultList.get(1)[0]);
+        assertEquals(1L, resultList.get(1)[1]);
+        assertEquals("category3", resultList.get(2)[0]);
+        assertEquals(1L, resultList.get(2)[1]);
     }
 }
