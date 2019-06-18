@@ -11,8 +11,6 @@ import org.easymock.EasyMock;
 import org.easymock.EasyMockRule;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,6 +47,7 @@ public class ForecastProcessorTest {
             });
         EasyMock.replay(mockWeatherService);
         Location maxTempLocation = forecastProcessor.findLocationWithMaximumTemperature(Arrays.asList("New York", "Chicago", "Houston", "Pasadena"));
+        EasyMock.verify(mockWeatherService);
         assertThat(maxTempLocation.getMaximumTemparature(), equalTo(new BigDecimal(MAX_TEMP)));
         assertThat(maxTempLocation.getName(), equalTo("Houston"));
     }
